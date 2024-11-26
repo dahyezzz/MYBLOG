@@ -85,4 +85,5 @@ const date = await Post.find();
 res.render("admin/allPosts", {locals,date, layout:adminLayout})
 }))
 
+
 module.exports = router;
