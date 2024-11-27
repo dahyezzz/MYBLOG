@@ -10,29 +10,32 @@ router.get(
     const locals = {
       title: "Home",
     };
-    const date = await Post.find();
+    const date = await Post.find({});
     res.render("index", { locals, date, layout: mainLayout });
   })
 );
-
-router.get("/about", (req, res) => {
-  const locals = {
-    title: "About",
-  };
-  res.render("about", { locals, layout: mainLayout });
-});
 
 /**
  * 게시물 상세보기
  * GET /post/:id
  */
+
 router.get(
   "/post/:id",
   asyncHandler(async (req, res) => {
-    const date = await Post.findOne({ _id: req.params.id });
-    res.render("post", { date, layout: mainLayout });
+    const data = await Post.findOne({ _id: req.params.id });
+    res.render("post", { data, layout: mainLayout });
   })
 );
+
+router.get("/about", (req, res) => {
+  res.render("about", { layout: mainLayout });
+});
+
+router.get("/contact", (req, res) => {
+  res.render("contact", { layout: mainLayout });
+});
+
 module.exports = router;
 
 // Post.insertMany( [

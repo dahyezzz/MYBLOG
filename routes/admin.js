@@ -13,12 +13,15 @@ const jwtSecret = process.env.JWT_SECRET;
  * Admin Page
  * GET /admin
  */
-router.get("/admin", (req, res) => {
-  const locals = {
-    title: "관리자 페이지",
-  };
-  res.render("admin/index", { locals, layout: adminLayout2 });
-});
+router.get(
+  "/admin",
+  asyncHandler((req, res) => {
+    const locals = {
+      title: "관리자 페이지",
+    };
+    res.render("admin/index", { locals, layout: adminLayout2 });
+  })
+);
 
 /**
  * Check Login
@@ -63,32 +66,33 @@ router.post(
   })
 );
 
-/**
- * View Register from
- * GET /register
- */
-router.get(
-  "/register",
-  asyncHandler(async (req, res) => {
-    res.render("admin/index", { layout: adminLayout2 });
-  })
-);
+// /**
+//  * View Register from
+//  * GET /register
+//  */
+// router.get(
+//   "/register",
+//   asyncHandler(async (req, res) => {
+//     res.render("admin/index", { layout: adminLayout2 });
+//   })
+// );
+//관리자 등록 후 사용하지 않음.
 
 /**
  * Register Administrator
  * POST / register
  */
-router.post(
-  "/register",
-  asyncHandler(async (req, res) => {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await User.create({
-      username: req.body.username,
-      password: hashedPassword,
-    });
-    // res.json(`user created: ${user}`);
-  })
-);
+// router.post(
+//   "/register",
+//   asyncHandler(async (req, res) => {
+//     const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//     const user = await User.create({
+//       username: req.body.username,
+//       password: hashedPassword,
+//     });
+//     // res.json(`user created: ${user}`);
+//   })
+// );
 
 /**
  * Get all Posts
@@ -102,10 +106,19 @@ router.get(
     const locals = {
       title: "Posts",
     };
-    const date = await Post.find();
-    res.render("admin/allPosts", { locals, date, layout: adminLayout });
+    const data = await Post.find();
+    res.render("admin/allPosts", { locals, data, layout: adminLayout });
   })
 );
+
+/**
+ * GET /logout
+ * Admin logout
+ */
+router.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.redirect("/");
+});
 
 /**
  * Admin - Add Post
@@ -151,9 +164,14 @@ router.get(
   asyncHandler(async (req, res) => {
     const locals = { title: "게시물 편집" };
     const data = await Post.findOne({ _id: req.params.id });
-    res.render("admin/edit", { locals, data, layout: adminLayout });
+    res.render("admin/edit", {
+      locals,
+      data,
+      layout: adminLayout,
+    });
   })
 );
+
 
 /**
  * Admin - Edit Post
@@ -171,4 +189,18 @@ router.put(
     res.redirect("/allPosts");
   })
 );
+
+/**
+ * Admin-Delete Post
+ * DELETE /delete/:id
+ */
+router.delete(
+  "/delete/:id",
+  checkLogin,
+  asyncHandler(async (req, res) => {
+    await Post.deleteOne({ _id: req.params.id });
+    res.redirect("/allPosts");
+  })
+);
+
 module.exports = router;
