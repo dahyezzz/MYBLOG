@@ -1,6 +1,6 @@
 <div class="admin-title">
     <h2><%= locals.title %></h2>
-    <a href="#" class="button">+ 새 게시물</a>
+    <a href="/add" class="button">+ 새 게시물</a>
 </div>
 
 <ul class="admin-posts">
@@ -10,7 +10,7 @@
         <%= post.title %>
     </a>
     <div class="admin-posts-controls">
-        <a href="#" class="btn">편집</a>
+        <a href="/edit/<%= post._id %>" class="btn">편집</a>
         
         <form action="#">
             <input type="submit" value="삭제" class="btn-delete btn">
